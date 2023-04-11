@@ -1,6 +1,10 @@
-﻿using WebApplication1.AppDbContext;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Asn1.Ocsp;
+using WebApplication1.AppDbContext;
 using WebApplication1.Models;
-using WebApplication1.Request;
+using WebApplication1.Request.UsuarioRequests;
+using WebApplication1.Response;
 
 namespace WebApplication1.Repository
 {
@@ -12,21 +16,39 @@ namespace WebApplication1.Repository
         }
         public static List<Usuario> Usuarios= new List<Usuario>();
         public readonly ApplicationDbContext _context;
-        public void AdicionarUsuario(Usuario user)
+        public Usuario AdicionarUsuario([FromBody]UsuarioRequest request)
         {
-            _context.Add(user);
+            var usuario = new Usuario()
+            {
+                Nome = request.Nome,
+                CriadoPor = request.CriadoPor,
+                TipoId = request.TipoId, 
+                DataCriação=DateTime.Now,
+            };
+            _context.Add(usuario);
+            return usuario;
         }
-        public void AtualizarUsuario(Usuario usuario,UsuarioRequest request) 
+        public void AtualizarUsuario(int id,[FromBody]UsuarioEditar editar) 
         {
-            usuario.Name= request.Name;
+            var usuario = _context.Usuarios.First(p => p.Id == id);          
+            usuario.Nome= editar.Nome;
+            usuario.EditadoPor= editar.EditadoPor;
+            usuario.Editado = DateTime.Now;
             _context.SaveChanges();
         }
-        public void DeletarUsuario(Usuario usuario)
+        public IResult DeletarUsuario(int id)
         {
-            _context.Remove(usuario);
+            var user=_context.Usuarios.FirstOrDefault(user=> user.Id == id);
+            if (user == null)
+            {
+                return Results.BadRequest("Usuário Inválido");
+            }
+            _context.Usuarios.Remove(user);
             _context.SaveChanges();
+            return Results.Ok(user);
+            
         }
 
-
+        
     }
 }

@@ -7,7 +7,7 @@ using MySql.EntityFrameworkCore.Metadata;
 namespace WebApplication1.Migrations
 {
     /// <inheritdoc />
-    public partial class UsuarioCategoria : Migration
+    public partial class UserAndCategory : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -24,8 +24,8 @@ namespace WebApplication1.Migrations
                     Nome = table.Column<string>(type: "longtext", nullable: false),
                     CriadoPor = table.Column<string>(type: "longtext", nullable: false),
                     DataCriação = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    EditadoPor = table.Column<string>(type: "longtext", nullable: false),
-                    Editado = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    EditadoPor = table.Column<string>(type: "longtext", nullable: true),
+                    Editado = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -39,12 +39,12 @@ namespace WebApplication1.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(type: "longtext", nullable: false),
                     TipoId = table.Column<int>(type: "int", nullable: false),
+                    Nome = table.Column<string>(type: "longtext", nullable: false),
                     CriadoPor = table.Column<string>(type: "longtext", nullable: false),
                     DataCriação = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    EditadoPor = table.Column<string>(type: "longtext", nullable: false),
-                    Editado = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    EditadoPor = table.Column<string>(type: "longtext", nullable: true),
+                    Editado = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {

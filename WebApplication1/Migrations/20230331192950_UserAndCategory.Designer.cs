@@ -11,8 +11,8 @@ using WebApplication1.AppDbContext;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230330194702_UsuarioCategoria")]
-    partial class UsuarioCategoria
+    [Migration("20230331192950_UserAndCategory")]
+    partial class UserAndCategory
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -35,11 +35,10 @@ namespace WebApplication1.Migrations
                     b.Property<DateTime>("DataCriação")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<DateTime>("Editado")
+                    b.Property<DateTime?>("Editado")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("EditadoPor")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Nome")
@@ -64,14 +63,13 @@ namespace WebApplication1.Migrations
                     b.Property<DateTime>("DataCriação")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<DateTime>("Editado")
+                    b.Property<DateTime?>("Editado")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("EditadoPor")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Nome")
                         .IsRequired()
                         .HasColumnType("longtext");
 

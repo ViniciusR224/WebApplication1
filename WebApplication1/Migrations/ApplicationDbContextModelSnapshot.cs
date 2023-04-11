@@ -60,14 +60,13 @@ namespace WebApplication1.Migrations
                     b.Property<DateTime>("DataCriação")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<DateTime>("Editado")
+                    b.Property<DateTime?>("Editado")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("EditadoPor")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Nome")
                         .IsRequired()
                         .HasColumnType("longtext");
 

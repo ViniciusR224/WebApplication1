@@ -8,9 +8,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using WebApplication1.AppDbContext;
 using WebApplication1.Models;
-using WebApplication1.Request;
 using WebApplication1.Repository;
 using NuGet.DependencyResolver;
+using WebApplication1.Response;
+using WebApplication1.Request.UsuarioRequests;
+using WebApplication1.Validations.UsuarioValidator;
+using MySqlX.XDevAPI.Common;
 
 namespace WebApplication1.Controllers.User
 {
@@ -21,54 +24,47 @@ namespace WebApplication1.Controllers.User
         public UsuariosController(ApplicationDbContext context)
         {
             _context = context;   //Lembre-se que você deve inicializar o dbcontext
+            userRepository = new UserRepository(context);
+            Response = new UsuarioResponse();
         }
-        protected ApplicationDbContext _context; //Até porque isso aqui é só uma propriedade de um certo tipo
-                                                 //Logo se não inicializar com um valor é null
+        protected readonly ApplicationDbContext _context; //Até porque isso aqui é só uma propriedade de um certo tipo
+        protected readonly UserRepository userRepository;  //Logo se não inicializar com um valor é null
+        protected readonly UsuarioResponse Response;
 
-
-        [HttpGet("/Usuarios")]      
+        [HttpGet("/Usuarios")]
         public IResult ObterInformações()
         {
-            var Usuarios = _context.Usuarios;
-            return Results.Ok(Usuarios);
+            var Usuarios = _context.Usuarios.ToList();
+            var lista = Response.GetList(Usuarios);
+            return Results.Ok(lista);
         }
         [HttpGet("/Usuario/{id}")]
-        public IResult ObterInformações([FromRoute] int id)
+        public IResult ObterInformações2([FromRoute] int id)
         {
-            var produto = _context.Usuarios.First(User => User.Id == id); //Tome cuidado ao usar o where, ele vai verificar todos, então coloque o First() para funcionar       
-            return Results.Ok(produto);
+            var usuario = _context.Usuarios.First(User => User.Id == id); //Tome cuidado ao usar o where, ele vai verificar todos, então coloque o First() para funcionar       
+            var response = new UsuarioResponse() { Nome = usuario.Nome, CriadoPor = usuario.CriadoPor };
+            return Results.Ok(response);
         }
 
 
         [HttpPost("/Usuarios")]
         public IResult InserirUsuario(UsuarioRequest request)
-        {
-            var instancia = new UserRepository(_context);
-            var usuario = new Usuario()
-            {
-                Name = request.Name,
-            };
-            instancia.AdicionarUsuario(usuario);
+        {           
+            var usuario=userRepository.AdicionarUsuario(request);           
             _context.SaveChanges();
-            return Results.Created($"/Usuarios/{usuario.Id}", usuario.Name);
+            return Results.Created($"/Usuarios/{usuario.Id}", usuario.Nome);
         }
-        [HttpPut("/Usuarios/{id}")]
-        public IResult Atualizar([FromRoute] int id, UsuarioRequest request)
+        [HttpPut("/Usuario/{id}")]
+        public IResult Atualizar([FromRoute] int id, [FromBody]UsuarioEditar request)
         {
-            var instancia = new UserRepository(_context);
-            var usuario = _context.Usuarios.Where(User => User.Id == id).First();
-            instancia.AtualizarUsuario(usuario, request);
-            //Parece que eu tenho que passar o context para que eu possa ter acesso
-            //aos dados quando utilizo um método intermediário, se não vou ter nullreference
-            return Results.Ok(_context.Usuarios.Where(c => c.Id == id));
+            userRepository.AtualizarUsuario(id,request);
+            return Results.Ok();
         }
         [HttpDelete("/Delete/{id}")]
-        public IResult DeletarUser([FromRoute] int id)
+        public IResult DeletarUser([FromRoute]int id)
         {
-            var instancia = new UserRepository(_context);
-            var usuario = _context.Usuarios.Where(user => user.Id == id).First();
-            instancia.DeletarUsuario(usuario);
-            return Results.Ok($"Usuario Deletado:{usuario}");
+            
+            return userRepository.DeletarUsuario(id);
         }
     }
 
